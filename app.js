@@ -29,12 +29,20 @@ io.on("connection", function (socket) {
   });
 
   socket.on("send-location", function(data) {
-    // Update user's location
+    // Get the user from connectedUsers
     const user = connectedUsers.get(socket.id);
-    connectedUsers.set(socket.id, { ...user, ...data });
+    
+    // If user doesn't exist, create a new user object
+    if (!user) {
+      connectedUsers.set(socket.id, { id: socket.id, name: `User ${socket.id.substr(0, 4)}`, ...data });
+    } else {
+      // Update user's location
+      connectedUsers.set(socket.id, { ...user, ...data });
+    }
     
     // Emit updated location to all clients
-    io.emit("receive-location", { id: socket.id, name: user.name, ...data });
+    const updatedUser = connectedUsers.get(socket.id);
+    io.emit("receive-location", { id: socket.id, name: updatedUser.name, ...data });
   });
 
   socket.on("disconnect", function() {

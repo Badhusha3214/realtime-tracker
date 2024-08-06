@@ -11,7 +11,10 @@ const markers = {};
 const userSection = document.getElementById("user-section");
 
 // Ask for user's name
-const userName = prompt("Please enter your name:");
+let userName = prompt("Please enter your name:");
+if (!userName) {
+    userName = `User ${socket.id.substr(0, 4)}`;
+}
 socket.emit("user-name", userName);
 
 if (navigator.geolocation) {
@@ -27,6 +30,7 @@ if (navigator.geolocation) {
 } else {
     console.log("Geolocation is not supported by this browser.");
 }
+
 
 function updateMap(id, name, latitude, longitude) {
     if (markers[id]) {
